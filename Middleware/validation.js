@@ -36,7 +36,7 @@ module.exports.validateSignUpBody = celebrate({
       "string.empty": "The email field must be filled in",
       "string.email": "The email field must be a valid email",
     }),
-    password: Joi.string().required().min().messages({
+    password: Joi.string().required().messages({
       "string.empty": "The password field must be filled in",
     }),
   }),
@@ -48,7 +48,7 @@ module.exports.validateLogInBody = celebrate({
       "string.email": "The email field must be a valid email",
       "string.empty": "The email field must be filled in",
     }),
-    password: Joi.string().required().min().messages({
+    password: Joi.string().required().messages({
       "string.empty": "The password field is required",
     }),
   }),
@@ -56,6 +56,6 @@ module.exports.validateLogInBody = celebrate({
 
 module.exports.validateId = celebrate({
   params: Joi.object().keys({
-    id: Joi.string().required().hex().length(24).message(),
+    id: Joi.string().required().hex().length(24),
   }),
 });

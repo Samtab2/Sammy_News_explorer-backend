@@ -1,7 +1,7 @@
 const router = require("express").Router();
 const newsItemsRouter = require("./newsItem");
 const userRouter = require("./Users");
-const { createUser, loginUser } = require("../controllers/Users");
+const { createUser, loginUser } = require("../controllers/users");
 const authMW = require("../Middleware/Auth");
 const NotFound = require("../errors/NotFound");
 const {
@@ -11,8 +11,8 @@ const {
 
 router.use("/items", newsItemsRouter);
 router.use("/users", authMW, userRouter);
-router.use("/signin", validateLogInBody, loginUser);
-router.use("/signup", validateSignUpBody, createUser);
+router.post("/signin", validateLogInBody, loginUser);
+router.post("/signup", validateSignUpBody, createUser);
 
 router.use(() => {
   next(new NotFound("Not found"));

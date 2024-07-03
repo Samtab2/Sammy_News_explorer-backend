@@ -1,6 +1,6 @@
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const User = require("../Models/Users");
+const User = require("../Models/users");
 const {
   Request_Successful,
   Request_Created,
@@ -42,7 +42,7 @@ const createUser = (req, res, next) => {
       if (err.code === 11000) {
         next(new Conflict("Duplicate key error"));
       } else {
-        next(err);
+        return next(err);
       }
     });
 };
@@ -60,7 +60,7 @@ const getUser = (req, res, next) => {
       if (err.name === "CastError") {
         next(new BadRequest("The data is invalid"));
       } else {
-        next(err);
+        return next(err);
       }
     });
 };
@@ -90,7 +90,7 @@ const loginUser = (req, res, next) => {
       if (err.message === "Incorrect email or password") {
         next(new UnAuthorized("Incorrect email or password"));
       } else {
-        next(err);
+        return next(err);
       }
     });
 };
