@@ -12,12 +12,12 @@ const { requestLogger, errorLogger } = require("./Middleware/Logger");
 const errorHandler = require("./Middleware/ErrorHandler");
 
 const app = express();
-const { PORT = 3000 } = process.env;
+const { PORT = 3001 } = process.env;
 
 mongoose.set("strictQuery", true);
 
 mongoose
-  .connect("mongodb://127.0.0.1:27017/")
+  .connect("mongodb://127.0.0.1:27017/news")
   .then(() => {
     console.log("DB connected");
   })

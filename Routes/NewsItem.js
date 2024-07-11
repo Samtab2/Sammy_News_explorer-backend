@@ -1,9 +1,9 @@
 const router = require("express").Router();
 
 const {
-  getNewsItems,
-  postNews,
-  deleteNews,
+  getArticles,
+  addArticle,
+  RemoveArticle,
 } = require("../controllers/NewsItems");
 
 const { validateNewsBody, validateId } = require("../Middleware/validation");
@@ -11,12 +11,12 @@ const { validateNewsBody, validateId } = require("../Middleware/validation");
 const authMW = require("../Middleware/Auth");
 
 // Get
-router.get("/", getNewsItems);
+router.get("/", getArticles);
 
 // Post
-router.post("/", authMW, validateNewsBody, postNews);
+router.post("/", authMW, validateNewsBody, addArticle);
 
 // Delete
-router.delete("/:id", authMW, validateId, deleteNews);
+router.delete("/:id", authMW, validateId, RemoveArticle);
 
 module.exports = router;

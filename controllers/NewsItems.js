@@ -9,7 +9,8 @@ const Forbidden = require("../errors/Forbidden");
 const BadRequest = require("../errors/BadRequest");
 
 // Create
-const postNews = (req, res, next) => {
+const addArticle = (req, res, next) => {
+  const owner = req.user._id;
   const { keyword, title, text, date, source, link, imageUrl } = req.body;
   newsItems
     .create({
@@ -20,9 +21,9 @@ const postNews = (req, res, next) => {
       source,
       link,
       imageUrl,
-      owner: req.user._id,
+      owner,
     })
-    .then((item) => res.status(Request_Created).send({ data: item }))
+    .then((article) => res.status(Request_Created).send({ data: article }))
     .catch((err) => {
       if (err.name === "ValidationError") {
         next(new BadRequest(err.message));
@@ -33,9 +34,8 @@ const postNews = (req, res, next) => {
 };
 
 // Get
-const getNewsItems = (req, res, next) => {
-  newsItems
-    .find({})
+const getArticles = (req, res, next) => {
+  Articles.find({ owner: req.user._id })
     .then((item) => res.status(Request_Successful).send(item))
     .catch((err) => {
       console.error(err);
@@ -44,37 +44,27 @@ const getNewsItems = (req, res, next) => {
 };
 
 // Delete
-const deleteNews = (req, res, next) => {
-  const { id } = req.params;
-  newsItems
-    .findbyId(id)
-    .orFail()
-    .then((item) => {
-      if (item.owner.toString() !== req.user._id) {
-        return next(
-          new Forbidden("You are not authorized to delete this item")
-        );
+const RemoveArticle = (req, res, next) => {
+  const { articleId } = req.params;
+  const userId = req.user._id;
+  Article.findbyId(articleId)
+    .select("+owner")
+    .orFail(() => next(new NotFound("Not found")))
+    .then((article) => {
+      if (userId !== article.owner.toString()) {
+        next;
+        new Forbidden("You are not authorized to delete this item");
       }
-      return item
-        .deleteOne()
-        .then(() => {
-          res.send({ message: "Item deleted" });
-        })
-        .catch((err) => {
-          console.error(err);
-          if (err.name === "DocumentNotFoundError") {
-            next(new NotFound("Not found"));
-          }
-          if (err.name === "CastError") {
-            next(new BadRequest("Bad request"));
-            next(err);
-          }
-        });
-    });
+      return Article.findByIdAndRemove(articleId)
+        .orFail(() => next(new NotFound("Not found")))
+        .then((removedArticle) => res.send(removedArticle))
+        .catch(next);
+    })
+    .catch(next);
 };
 
 module.exports = {
-  postNews,
-  getNewsItems,
-  deleteNews,
+  addArticle,
+  getArticles,
+  RemoveArticle,
 };
